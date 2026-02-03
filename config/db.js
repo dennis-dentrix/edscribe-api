@@ -9,13 +9,13 @@ const connectDB = async () => {
   try {
     // Attempt to connect to MongoDB
     const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      // Mongoose 6+ doesn't need these options by default
-      // But they're good for older versions or specific configurations
+      // mongoose options
       // maxPoolSize: 10,
       // serverSelectionTimeoutMS: 5000,
       // socketTimeoutMS: 45000,
     });
 
+    console.log(`MongoDB Database connected with HOST: ${conn.connection.host}`);
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
 
     // Handle connection events

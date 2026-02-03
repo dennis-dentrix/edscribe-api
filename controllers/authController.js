@@ -176,14 +176,14 @@ const forgotPassword = async (req, res) => {
     await user.save();
 
     // TODO: Send email with resetToken
-    // For now, just return success
-    console.log("Reset token:", resetToken);
+    // Never return reset token to client
+    if (process.env.NODE_ENV !== "production") {
+      console.log("Reset token:", resetToken);
+    }
 
     res.json({
       success: true,
       message: "Password reset email sent",
-      // In production, remove this line
-      resetToken: resetToken,
     });
   } catch (error) {
     console.error("Forgot password error:", error);

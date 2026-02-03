@@ -34,8 +34,27 @@ const createOrder = async (req, res) => {
       orderData.urgency = "standard";
     }
 
-    // Create order
-    const order = await Order.create(orderData);
+    // Create order (retry on rare orderNumber collisions)
+    let order;
+    let attempts = 0;
+    while (!order && attempts < 3) {
+      try {
+        order = await Order.create(orderData);
+      } catch (err) {
+        if (err && err.code === 11000 && err.keyPattern?.orderNumber) {
+          attempts += 1;
+          continue;
+        }
+        throw err;
+      }
+    }
+
+    if (!order) {
+      return res.status(500).json({
+        success: false,
+        error: "Server error creating order",
+      });
+    }
 
     // Populate student info for response
     await order.populate("student", "firstName lastName email");

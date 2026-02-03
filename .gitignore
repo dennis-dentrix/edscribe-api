@@ -12,7 +12,7 @@ pnpm-debug.log*
 # Env
 .env
 .env.*
-!.env.example
+config.env/
 
 # Build output
 /dist/

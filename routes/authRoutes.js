@@ -22,6 +22,8 @@ const { protect, generateToken } = require("../middleware/auth");
 const {
   validateUserRegistration,
   validateUserLogin,
+  validatePasswordReset,
+  validateChangePassword,
 } = require("../middleware/validation");
 
 // Google OAuth routes
@@ -54,13 +56,13 @@ router.get(
 router.post("/register", validateUserRegistration, register);
 router.post("/login", validateUserLogin, login);
 router.post("/forgot-password", forgotPassword);
-router.put("/reset-password/:token", resetPassword);
+router.put("/reset-password/:token", validatePasswordReset, resetPassword);
 
 // Protected routes
 router.use(protect);
 router.get("/me", getMe);
 router.post("/logout", logout);
 router.put("/profile", updateProfile);
-router.put("/password", changePassword);
+router.put("/password", validateChangePassword, changePassword);
 
 module.exports = router;

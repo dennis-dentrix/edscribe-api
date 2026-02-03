@@ -31,6 +31,9 @@ router.post("/calculate-price", calculatePrice);
 // Protected routes
 router.use(protect);
 
+// Must be before "/:id" to avoid route conflicts
+router.get("/number/:orderNumber", getOrderByNumber);
+
 // Order CRUD
 router
   .route("/")
@@ -45,7 +48,6 @@ router
 // Additional endpoints
 router.put("/:id/cancel", validateOrderId, cancelOrder);
 router.post("/:id/review", validateOrderId, reviewOrder);
-router.get("/number/:orderNumber", getOrderByNumber);
 
 // Admin-only routes (would need admin middleware)
 router.put("/:id/status", validateOrderId, authorize("admin"), updateOrder);

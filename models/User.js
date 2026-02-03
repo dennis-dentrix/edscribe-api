@@ -93,9 +93,7 @@ userSchema.virtual("fullName").get(function () {
   return `${this.firstName} ${this.lastName}`;
 });
 
-// Index for faster queries
-userSchema.index({ email: 1 });
-userSchema.index({ googleId: 1 });
+// Indexes are already created via `unique: true` on fields above
 
 /**
  * Hash password before saving
