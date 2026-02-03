@@ -39,7 +39,7 @@ app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true); // allow Postman / server-to-server
-      const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:3000"];
+      const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:5173"];
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
