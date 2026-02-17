@@ -44,6 +44,14 @@ const protect = async (req, res, next) => {
         });
       }
 
+      // Invalidate tokens issued before logout/password reset events
+      if ((decoded.tokenVersion ?? 0) !== user.tokenVersion) {
+        return res.status(401).json({
+          success: false,
+          error: "Token has been revoked. Please log in again.",
+        });
+      }
+
       // Check if user is active
       if (!user.isActive) {
         return res.status(401).json({
@@ -89,7 +97,11 @@ const optionalAuth = async (req, res, next) => {
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user = await User.findById(decoded.id).select("-password");
-        if (user && user.isActive) {
+        if (
+          user &&
+          user.isActive &&
+          (decoded.tokenVersion ?? 0) === user.tokenVersion
+        ) {
           req.user = user;
         }
       } catch (error) {
@@ -134,7 +146,12 @@ const authorize = (...roles) => {
  */
 const generateToken = (user) => {
   return jwt.sign(
-    { id: user._id, email: user.email, role: user.role },
+    {
+      id: user._id,
+      email: user.email,
+      role: user.role,
+      tokenVersion: user.tokenVersion ?? 0,
+    },
     process.env.JWT_SECRET,
     {
       expiresIn: process.env.JWT_EXPIRE || "7d",

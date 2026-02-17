@@ -10,6 +10,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 const path = require("path");
 
 const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const pricingRoutes = require("./routes/pricingRoutes");
 
@@ -73,6 +74,7 @@ if (process.env.NODE_ENV !== "production") {
 /* -------------------- ROUTES -------------------- */
 
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/orders", orderRoutes);
 app.use("/api/v1/pricing", pricingRoutes);
 

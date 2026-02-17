@@ -12,7 +12,7 @@ const crypto = require("crypto");
 // @access  Public
 const register = async (req, res) => {
   try {
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password, role } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -29,6 +29,7 @@ const register = async (req, res) => {
       lastName,
       email,
       password,
+      role,
       authProvider: "local",
       isVerified: false,
     });
@@ -136,14 +137,30 @@ const getMe = async (req, res) => {
   }
 };
 
-// @desc    Logout user / clear cookie
+// @desc    Logout user
 // @route   POST /api/auth/logout
 // @access  Private
 const logout = async (req, res) => {
-  res.json({
-    success: true,
-    message: "Logged out successfully",
-  });
+  try {
+    // Revoke all existing JWTs for this user
+    await User.findByIdAndUpdate(req.user._id, {
+      $inc: { tokenVersion: 1 },
+    });
+
+    // Safe no-op for clients not using cookies
+    res.clearCookie("token");
+
+    res.json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    console.error("Logout error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Server error during logout",
+    });
+  }
 };
 
 // @desc    Forgot password
@@ -222,6 +239,7 @@ const resetPassword = async (req, res) => {
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
     user.isVerified = true;
+    user.tokenVersion += 1;
     await user.save();
 
     // Generate new token
@@ -295,6 +313,7 @@ const changePassword = async (req, res) => {
     }
 
     user.password = newPassword;
+    user.tokenVersion += 1;
     await user.save();
 
     const token = generateToken(user);

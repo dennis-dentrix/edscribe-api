@@ -63,6 +63,10 @@ const userSchema = new mongoose.Schema(
       enum: ["student", "tutor", "admin"],
       default: "student",
     },
+    tokenVersion: {
+      type: Number,
+      default: 0,
+    },
 
     // Authentication provider
     authProvider: {

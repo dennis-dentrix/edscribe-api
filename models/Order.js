@@ -35,6 +35,7 @@ const orderSchema = new mongoose.Schema(
       required: [true, "Task type is required"],
       enum: {
         values: [
+          "quiz",
           "essay",
           "research_paper",
           "technical_writing",
